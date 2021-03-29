@@ -5,6 +5,7 @@ let server = require('../index');
 let chai = require('chai');
 let should = chai.should();
 let chaiHttp = require('chai-http');
+const { assert, expect } = require('chai');
 chai.use(chaiHttp);
 
 let apiUrl = "http://localhost:3000";
@@ -23,6 +24,7 @@ describe('Endpoint tests', () => {
     //Write your tests below here
     //###########################
 
+    //GET /api/v1/boards
     it("Get request for all boards - success case", function(done) {
         chai.request(apiUrl)
             .get('/api/v1/boards/')
@@ -35,17 +37,23 @@ describe('Endpoint tests', () => {
             })
     });
 
+    //GET /api/v1/boards/:boardId
     it("Get request for a specific board - success case", function(done) {
         chai.request(apiUrl)
             .get('/api/v1/boards/0')
             .end(function(err, res) {
-                res.should.have.status(200);
+                expect(res).to.have.status(200);
                 res.should.to.be.json;
+                expect(res.body).to.have.property("id");
+                expect(res.body).to.have.property("name");
+                expect(res.body).to.have.property("description");
+                expect(res.body).to.have.property("tasks");
                 done();
             })
     })
 
-    it('Post request for a board - success case', function(done) {
+    //POST /api/v1/boards/:boardId
+    it('POST request for a board - success case', function(done) {
         let testBoard = {
             name:'TestBoard',
             description:'From the unit testing'
@@ -61,22 +69,6 @@ describe('Endpoint tests', () => {
             })
     })
 
-    // it('Post request for a board - Failing case', function(done) {
-    //     let badTestBoard = {
-    //         name: 'TestBoard'
-    //     }
-
-    //     chai.request(apiUrl)
-    //         .post('/api/v1/boards/')
-    //         .type('json')
-    //         .send(badTestBoard)
-    //         .end(function(err, res) {
-    //             res.should.have.status(400);
-    //             res.should.to.be.json;
-    //             done();
-    //         })
-    // })
-    
     it('PUT request for a board (id=1) - success case', function(done) {
         let testBoard = {
             name: 'TestName',
@@ -106,6 +98,7 @@ describe('Endpoint tests', () => {
             .end(function(err, res) {
                 res.should.have.status(400);
                 res.should.to.be.json;
+                expect(res.body).to.have.property("message").equal("To update a board, all attributes are needed (name and description).")
                 done();
             })
     })
@@ -121,14 +114,13 @@ describe('Endpoint tests', () => {
             })
     })
 
-
-    // This test doesn't do much
-    it("Please remove me before handin - I don't do much", function (done) {
-        chai.request(apiUrl)
-            .get('/')
-            .end((err, res) => {
-                res.should.not.be.undefined;
-                done();
-            });
-    });
+    // // This test doesn't do much
+    // it("Please remove me before handin - I don't do much", function (done) {
+    //     chai.request(apiUrl)
+    //         .get('/')
+    //         .end((err, res) => {
+    //             res.should.not.be.undefined;
+    //             done();
+    //         });
+    // });
 });
