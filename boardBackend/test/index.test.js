@@ -29,10 +29,10 @@ describe('Endpoint tests', () => {
         chai.request(apiUrl)
             .get('/api/v1/boards/')
             .end(function(err, res) {
-                res.should.have.status(200);
+                expect(res).to.have.status(200);
                 res.should.to.be.json;
-                res.body.should.be.a('array');
-                res.body.should.have.length(2);
+                expect(res.body).to.be.a('Array');
+                expect(Object.keys(res.body).length).equal(2);
                 done();
             })
     });
@@ -44,19 +44,12 @@ describe('Endpoint tests', () => {
             .end(function(err, res) {
                 expect(res).to.have.status(200);
                 res.should.to.be.json;
-                //TODO how to check for no extra attibutes
-                expect(res.body).to.have.property("id").equal("0");
-                expect(res.body).to.have.property("name").equal("Planned");
-                expect(res.body).to.have.property("description").equal("My todo list.");
-                expect(res.body).to.have.property("tasks");
-                //check the task associated w that board
-                //TODO this shit doesn't work: (how to check for extra attributes)
-                expect(res.body.tasks).to.have.property("id");
-                expect(res.body.tasks).to.have.property("boardId");
-                expect(res.body.tasks).to.have.property("taskName");
-                expect(res.body.tasks).to.have.property("dateCreated");
-                expect(res.body.tasks).to.have.property("archived");
-
+                expect(Object.keys(res.body).length).equal(4);
+                expect(res.body).to.have.property("id").to.be.a('String').equal("0");
+                expect(res.body).to.have.property("name").to.be.a('String').equal("Planned");
+                expect(res.body).to.have.property("description").to.be.a('String').equal("My todo list.");
+                expect(res.body).to.have.property("tasks").to.be.a('Array');
+                expect(res.body.tasks[0]).to.be.a('String').equal('0');
                 done();
             })
     })
@@ -74,12 +67,11 @@ describe('Endpoint tests', () => {
             .end(function(err, res) {
                 res.should.have.status(201);
                 res.should.to.be.json;
-                //TODO check for no extra attributes
-                //TODO check for correct values
-                expect(res.body).to.have.property("id");
-                expect(res.body).to.have.property("name");
-                expect(res.body).to.have.property("description");
-                expect(res.body).to.have.property("tasks");
+                expect(Object.keys(res.body).length).equal(4);
+                expect(res.body).to.have.property("id").to.be.a('Number').equal(2);
+                expect(res.body).to.have.property("name").to.be.a('String').equal("TestBoard");
+                expect(res.body).to.have.property("description").to.be.a('String').equal("From the unit testing");
+                expect(res.body).to.have.property("tasks").to.be.a('Array');
                 done();
             })
     })
@@ -96,14 +88,14 @@ describe('Endpoint tests', () => {
             .type('json')
             .send(testBoard)
             .end(function(err, res) {
-                res.should.have.status(200);
+                expect(res).to.have.status(200);
                 res.should.to.be.json;
-                //TODO check no extra attributes
-                //TODO check correct values
-                expect(res.body).to.have.property("id");
-                expect(res.body).to.have.property("name");
-                expect(res.body).to.have.property("description");
-                expect(res.body).to.have.property("tasks");
+                expect(Object.keys(res.body).length).equal(4);
+                expect(res.body).to.have.property("id").to.be.a('String').equal("1");
+                expect(res.body).to.have.property("name").to.be.a('String').equal("TestName");
+                expect(res.body).to.have.property("description").to.be.a('String').equal("Some Description");
+                expect(res.body).to.have.property("tasks").to.be.a('Array');
+                expect(res.body.tasks[0]).to.be.a('undefined');
                 done();
             })
     })
@@ -131,9 +123,10 @@ describe('Endpoint tests', () => {
         chai.request(apiUrl)
             .get('/api/v1/boards/0/tasks')
             .end(function(err, res) {
-                res.should.have.status(200);
+                expect(res).to.have.status(200);
                 res.should.to.be.json;
-                res.body.should.be.a('array');
+                expect(res.body).to.be.a('Array');
+                expect(Object.keys(res.body).length).equal(1);
                 done();
             })
     })
@@ -145,20 +138,36 @@ describe('Endpoint tests', () => {
             .end(function(err, res) {
                 res.should.have.status(200);
                 res.should.to.be.json;
-                //TODO how to check for no extra properties
-                //TODO how to check for the right values
+                expect(Object.keys(res.body).length).to.be.equal(5);
                 expect(res.body).to.have.property("id");
-                expect(res.body).to.have.property("boardId");
-                expect(res.body).to.have.property("taskName");
+                expect(res.body).to.have.property("boardId").to.be.a('String').equal('0');
+                expect(res.body).to.have.property("taskName").to.be.a('String').equal('A task');
                 expect(res.body).to.have.property("dateCreated");
-                expect(res.body).to.have.property("archived");
+                expect(res.body).to.have.property("archived").to.be.a('Boolean');
                 done();
             })
     })
 
-    
-
-
+    it('POST request for a task', function(done) {
+        let newTask = {
+            boardId: 0,
+            taskName: 'New Task',
+            description: 'A new description'
+        }
+        chai.request(apiUrl)
+            .post('/api/v1/boards/0/tasks/')
+            .type('json')
+            .send(newTask)
+            .end(function(err, res) {
+                expect(res).to.have.status(201);
+                res.should.to.be.json;
+                expect(Object.keys(res.body).length).to.be.equal(5);
+                expect(res.body).to.have.property("boardId").to.be.a('String').equal("0");
+                expect(res.body).to.have.property("taskName").to.be.a('String').equal("New Task");
+                expect(res.body).to.have.property("archived").to.be.a('Boolean').equal(false);
+                done();
+            })
+    })
     // // This test doesn't do much
     // it("Please remove me before handin - I don't do much", function (done) {
     //     chai.request(apiUrl)
