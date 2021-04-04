@@ -62,7 +62,7 @@ describe('Endpoint tests', () => {
         }
         chai.request(apiUrl)
             .post('/api/v1/boards/')
-            .type('json')
+            .set('Content-type', 'application/json')
             .send(testBoard)
             .end(function(err, res) {
                 res.should.have.status(201);
@@ -85,7 +85,7 @@ describe('Endpoint tests', () => {
 
         chai.request(apiUrl)
             .put('/api/v1/boards/1')
-            .type('json')
+            .set('Content-type', 'application/json')
             .send(testBoard)
             .end(function(err, res) {
                 expect(res).to.have.status(200);
@@ -108,7 +108,7 @@ describe('Endpoint tests', () => {
 
         chai.request(apiUrl)
             .put('/api/v1/boards/1')
-            .type('json')
+            .set('Content-type', 'application/json')
             .send(badTestBoard)
             .end(function(err, res) {
                 res.should.have.status(400);
@@ -156,7 +156,7 @@ describe('Endpoint tests', () => {
         }
         chai.request(apiUrl)
             .post('/api/v1/boards/0/tasks/')
-            .type('json')
+            .set('Content-type', 'application/json')
             .send(newTask)
             .end(function(err, res) {
                 expect(res).to.have.status(201);
@@ -168,13 +168,28 @@ describe('Endpoint tests', () => {
                 done();
             })
     })
-    // // This test doesn't do much
-    // it("Please remove me before handin - I don't do much", function (done) {
-    //     chai.request(apiUrl)
-    //         .get('/')
-    //         .end((err, res) => {
-    //             res.should.not.be.undefined;
-    //             done();
-    //         });
-    // });
+
+    it('AUTH/DELETE request for a board (boardId = 1)', function(done) {
+        let token;
+        //TODO post auth
+        chai.request(apiUrl)
+            .post('/api/v1/auth/')
+            .set('Content-type', 'application/json')
+            .end(function(err, res) {
+                expect(res).to.have.status(200);
+                expect(res.body).to.have.property("token");
+                token = res.body.token;
+            });
+        //let request = {}
+        console.log(token)
+
+        //TODO delete board
+
+        // chai.request(apiUrl)
+        //     .delete('/api/v1/boards/1/')
+        //     .end(function(err, res) {
+        //         expect(res.body)
+        //     });
+
+    })
 });
