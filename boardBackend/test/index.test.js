@@ -76,7 +76,7 @@ describe('Endpoint tests', () => {
             })
     })
     
-    //PUT /api/v1/boards/:boardId S
+    //PUT /api/v1/boards/:boardId Success
     it('PUT request for a board (id=1) - success case', function(done) {
         let testBoard = {
             name: 'TestName',
@@ -100,7 +100,7 @@ describe('Endpoint tests', () => {
             })
     })
 
-    // PUT /api/v1/boards/:boardId F
+    // PUT /api/v1/boards/:boardId Fail
     it('PUT request for a board (id=1) - Failing case', function(done) {
         let badTestBoard = {
             name: 'TestBoard'
@@ -148,6 +148,7 @@ describe('Endpoint tests', () => {
             })
     })
 
+    //POST /api/v1/boards/:boardId/tasks
     it('POST request for a task', function(done) {
         let newTask = {
             boardId: 0,
@@ -169,27 +170,31 @@ describe('Endpoint tests', () => {
             })
     })
 
+    //auth request for a boardId = 1
     it('AUTH/DELETE request for a board (boardId = 1)', function(done) {
-        let token;
-        //TODO post auth
+        var token;
+        //auth request
         chai.request(apiUrl)
             .post('/api/v1/auth/')
+            .auth('admin', 'secret')
             .set('Content-type', 'application/json')
             .end(function(err, res) {
                 expect(res).to.have.status(200);
                 expect(res.body).to.have.property("token");
-                token = res.body.token;
+                token = res.body.token[0];
+                done();
             });
-        //let request = {}
-        console.log(token)
 
-        //TODO delete board
-
-        // chai.request(apiUrl)
-        //     .delete('/api/v1/boards/1/')
-        //     .end(function(err, res) {
-        //         expect(res.body)
-        //     });
+        //delete request
+        chai.request(apiUrl)
+            .del('/api/v1/boards/1/')
+            .set("Authorization", "Basic " + token)
+            .end(function(err1, res1) {
+                //TODO why is this not working
+                expect(res1).to.have.status(200);
+                res1.should.to.be.json;
+                done();
+            });
 
     })
 });
