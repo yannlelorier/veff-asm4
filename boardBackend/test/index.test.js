@@ -183,18 +183,18 @@ describe('Endpoint tests', () => {
                 expect(res.body).to.have.property("token");
                 token = res.body.token[0];
                 done();
+                chai.request(apiUrl)
+                    .del('/api/v1/boards/1/')
+                    .set("Authorization", token)
+                    .end(function(err1, delRes) {
+                        //TODO why is this not working
+                        expect(delRes).to.have.status(200);
+                        delRes.should.to.be.json;
+                        done();
+                    });
             });
 
         //delete request
-        chai.request(apiUrl)
-            .del('/api/v1/boards/1/')
-            .set("Authorization", "Basic " + token)
-            .end(function(err1, res1) {
-                //TODO why is this not working
-                expect(res1).to.have.status(200);
-                res1.should.to.be.json;
-                done();
-            });
 
     })
 });
