@@ -67,11 +67,12 @@ describe('Endpoint tests', () => {
             .end(function(err, res) {
                 res.should.have.status(201);
                 res.should.to.be.json;
-                expect(Object.keys(res.body).length).equal(4);
-                expect(res.body).to.have.property("id").to.be.a('Number').equal(2);
+                expect(Object.keys(res.body).length).equal(4); //id, name, description, tasks
+                expect(res.body).to.have.property("id");
                 expect(res.body).to.have.property("name").to.be.a('String').equal("TestBoard");
                 expect(res.body).to.have.property("description").to.be.a('String').equal("From the unit testing");
                 expect(res.body).to.have.property("tasks").to.be.a('Array');
+                expect(res.body.tasks).to.have.length(0);
                 done();
             })
     })
@@ -90,8 +91,8 @@ describe('Endpoint tests', () => {
             .end(function(err, res) {
                 expect(res).to.have.status(200);
                 res.should.to.be.json;
-                expect(Object.keys(res.body).length).equal(4);
-                expect(res.body).to.have.property("id").to.be.a('String').equal("1");
+                expect(Object.keys(res.body).length).equal(4); //id, name, description, tasks
+                expect(res.body).to.have.property("id");
                 expect(res.body).to.have.property("name").to.be.a('String').equal("TestName");
                 expect(res.body).to.have.property("description").to.be.a('String').equal("Some Description");
                 expect(res.body).to.have.property("tasks").to.be.a('Array');
@@ -102,6 +103,7 @@ describe('Endpoint tests', () => {
 
     // PUT /api/v1/boards/:boardId Fail
     it('PUT request for a board (id=1) - Failing case', function(done) {
+        //no description:
         let badTestBoard = {
             name: 'TestBoard'
         }
@@ -143,7 +145,7 @@ describe('Endpoint tests', () => {
                 expect(res.body).to.have.property("boardId").to.be.a('String').equal('0');
                 expect(res.body).to.have.property("taskName").to.be.a('String').equal('A task');
                 expect(res.body).to.have.property("dateCreated");
-                expect(res.body).to.have.property("archived").to.be.a('Boolean');
+                expect(res.body).to.have.property("archived").to.be.a('Boolean').to.equal(false);
                 done();
             })
     })
@@ -163,9 +165,11 @@ describe('Endpoint tests', () => {
                 expect(res).to.have.status(201);
                 res.should.to.be.json;
                 expect(Object.keys(res.body).length).to.be.equal(5);
+                expect(res.body).to.have.property("id");
                 expect(res.body).to.have.property("boardId").to.be.a('String').equal("0");
                 expect(res.body).to.have.property("taskName").to.be.a('String').equal("New Task");
                 expect(res.body).to.have.property("archived").to.be.a('Boolean').equal(false);
+                expect(res.body).to.have.property("dateCreated");
                 done();
             })
     })
@@ -182,19 +186,14 @@ describe('Endpoint tests', () => {
                 expect(res).to.have.status(200);
                 expect(res.body).to.have.property("token");
                 token = res.body.token[0];
-                done();
                 chai.request(apiUrl)
                     .del('/api/v1/boards/1/')
-                    .set("Authorization", token)
+                    .set("Authorization", "Bearer " + token)
                     .end(function(err1, delRes) {
-                        //TODO why is this not working
                         expect(delRes).to.have.status(200);
                         delRes.should.to.be.json;
                         done();
                     });
             });
-
-        //delete request
-
     })
 });
