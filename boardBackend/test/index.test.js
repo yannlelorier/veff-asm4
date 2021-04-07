@@ -92,7 +92,7 @@ describe('Endpoint tests', () => {
                 expect(res).to.have.status(200);
                 res.should.to.be.json;
                 expect(Object.keys(res.body).length).equal(4); //id, name, description, tasks
-                expect(res.body).to.have.property("id");
+                expect(res.body).to.have.property("id").to.be.a('String').to.be.equal('1');
                 expect(res.body).to.have.property("name").to.be.a('String').equal("TestName");
                 expect(res.body).to.have.property("description").to.be.a('String').equal("Some Description");
                 expect(res.body).to.have.property("tasks").to.be.a('Array');
@@ -144,7 +144,7 @@ describe('Endpoint tests', () => {
                 expect(res.body).to.have.property("id");
                 expect(res.body).to.have.property("boardId").to.be.a('String').equal('0');
                 expect(res.body).to.have.property("taskName").to.be.a('String').equal('A task');
-                expect(res.body).to.have.property("dateCreated");
+                expect(res.body).to.have.property("dateCreated").equal(1611244080000);
                 expect(res.body).to.have.property("archived").to.be.a('Boolean').to.equal(false);
                 done();
             })
